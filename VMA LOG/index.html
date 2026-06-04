@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calculateur Allures</title>
+    
+    <link rel="apple-touch-icon" href="icone.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <style>
+.main-title {
+    text-align: center;
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 800;
+    margin: 10px 0 25px 0;
+    padding: 10px;
+    letter-spacing: -0.5px;
+    /* Un petit effet moderne */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 15px;
+}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f5f7;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 340px;
+            margin-top: 20px;
+        }
+
+        .main-title {
+            text-align: center;
+            color: #0f172a;
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: #e2e8f0;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+	    display: flex;
+   	    align-items: center;
+            justify-content: center;
+        }
+
+        .tab.active {
+            background-color: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            margin-bottom: 20px;
+        }
+
+        label { display: block; color: #0f172a; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .input-desc { font-size: 12px; color: #64748b; margin-bottom: 10px; font-weight: 400; }
+
+        input {
+            width: 100%;
+            height: 44px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0 12px;
+            font-size: 16px;
+            color: #0f172a;
+            box-sizing: border-box;
+            margin-bottom: 18px;
+            -webkit-appearance: none;
+        }
+
+        button {
+            width: 100%;
+            height: 50px;
+            background-color: #0f172a;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+        }
+
+        .result-card {
+            text-align: center;
+            color: #475569;
+            font-size: 16px;
+            font-weight: 600;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.6;
+        }
+        
+        .clear-btn {
+            background-color: transparent;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            text-decoration: underline;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+       <h1 class="main-title">
+    📈 L'indispensable du coureur
+</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('vma-tab', this)">Calcul VMA</div>
+            <div class="tab" onclick="switchTab('triade-tab', this)">Distance / Temps / Allure</div>
+	    <div class="tab" onclick="switchTab('passage-tab', this)">Temps de Passage</div>
+        </div>
+        
+        <div id="vma-tab" class="tab-content active">
+            <div class="card">
+                <label for="vma">VMA ou Allure de référence</label>
+                <div class="input-desc">Ex : 15,5 km/h ou 3:31 min/km</div>
+                <input type="text" id="vma" autocomplete="off" autocapitalize="none">
+                
+                <label for="pourcentage">Pourcentage cible</label>
+                <div class="input-desc">Ex : 85 %</div>
+                <input type="number" id="pourcentage" pattern="[0-9]*">
+            </div>
+            <button onclick="calculerVma()">Calculer l'allure</button>
+            <div class="card result-card" id="bloc-resultat-vma">
+                <div id="resultat-vma">Entrez vos données pour afficher l'allure cible.</div>
+            </div>
+        </div>
+        
+        <div id="triade-tab" class="tab-content">
+            <div class="card">
+                <p style="margin: 0 0 15px 0; font-size: 13px; color: #64748b; text-align: center; font-style: italic;">
+                    Remplissez 2 champs, le 3ème sera calculé !
+                </p>
+                <label for="t-distance">Distance</label>
+     		<div class="input-desc">Ex : 42,195km ou 10 km</div>
+                <input type="text" id="t-distance" autocomplete="off">
+
+                <label for="t-temps">Temps</label>
+     		<div class="input-desc">Format HH:MM:SS ou MM:SS</div>
+                <input type="text" id="t-temps" autocomplete="off">
+
+                <label for="t-allure">Allure / Vitesse</label>
+		<div class="input-desc">Ex : 4:15 min/km ou 14,1 km/h</div>
+                <input type="text" id="t-allure" autocomplete="off" autocapitalize="none">
+            </div>
+            <button onclick="calculerTriade()">Calculer la variable manquante</button>
+            <button class="clear-btn" onclick="effacerTriade()">Réinitialiser les champs</button>
+            <div class="card result-card" id="bloc-resultat-triade">
+                <div id="resultat-triade">Remplissez exactement deux variables.</div>
+            </div>
+        </div>
+
+<div id="passage-tab" class="tab-content">
+            <div class="card">
+  <p style="margin: 0 0 15px 0; font-size: 13px; color: #64748b; text-align: center; font-style: italic;">
+                    Vos temps de passages aux km !
+                </p>
+                <label for="p-distance">Distance</label>
+		<div class="input-desc">Ex : 42,195km ou 10 km</div>
+                <input type="text" id="p-distance" autocomplete="off">
+                
+                <label for="p-intervalle">Intervalle</label>
+                <div class="input-desc">Ex : Tous les 5 km</div>
+                <input type="text" id="p-intervalle" autocomplete="off">
+
+  		<label for="p-allure">Allure / Vitesse </label>
+		<div class="input-desc">Ex : 4:15 min/km ou 14,1 km/h</div>
+                <input type="text" id="p-allure" autocomplete="off">
+
+            </div>
+            <button onclick="calculerPassage()">Calculer les temps de passage</button>
+            <div class="card result-card" id="bloc-resultat-passage">
+                <div id="resultat-passage">Entrez vos données !</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(id, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        function toSec(str) {
+            let p = str.split(':').map(Number);
+            return p.length === 3 ? p[0]*3600 + p[1]*60 + p[2] : p[0]*60 + p[1];
+        }
+
+        function toMinSec(s) {
+            let m = Math.floor(s/60);
+            let sec = Math.round(s%60);
+            return m + ":" + sec.toString().padStart(2, '0');
+        }
+        // --- ONGLET 1 (VMA) ---
+          function calculerVma() {
+            let saisieVma = document.getElementById('vma').value.trim();
+            let saisiePcent = document.getElementById('pourcentage').value.trim();
+            let lblResultat = document.getElementById('resultat-vma');
+
+
+            if (!saisieVma || !saisiePcent) {
+                lblResultat.innerHTML = "⚠️ Veuillez remplir tous les champs.";
+                return;
+            }
+
+
+
+            let pourcentage = parseFloat(saisiePcent) / 100;
+            let vmaKmh = 0;
+
+
+            if (saisieVma.includes(':')) {
+                let parts = saisieVma.split(':');
+                if (parts.length !== 2) {
+                    lblResultat.innerHTML = "⚠️ Format d'allure incorrect.<br>Utilisez MIN:SEC (ex : 3:31)";
+                    return;
+                }
+                let minutes = parseInt(parts[0], 10);
+                let secondes = parseInt(parts[1], 10);
+                let tempsHeuresParKm = (minutes * 60 + secondes) / 3600;
+                vmaKmh = 1 / tempsHeuresParKm;
+            } else {
+                vmaKmh = parseFloat(saisieVma.replace(',', '.'));
+            }
+
+
+            if (isNaN(vmaKmh) || isNaN(pourcentage) || vmaKmh <= 0 || pourcentage <= 0) {
+                lblResultat.innerHTML = "⚠️ Données invalides.";
+                return;
+            }
+
+
+            let vitesseCibleKmh = vmaKmh * pourcentage;
+            let tempsTotalMinutes = (1 / vitesseCibleKmh) * 60;
+            let minFinales = Math.floor(tempsTotalMinutes);
+            let secFinales = Math.floor((tempsTotalMinutes - minFinales) * 60);
+            let vitesseAffichage = vitesseCibleKmh.toFixed(2).replace('.', ',');
+
+
+            lblResultat.innerHTML = `
+                <div class="highlight-container">
+                    <div class="highlight-title">🎯 Zone ${saisiePcent}%</div>
+                    <div class="highlight-main">🏃‍♂️ ${minFinales}:${secFinales.toString().padStart(2, '0')} / km</div>
+                    <div class="highlight-sub">⚡ ${vitesseAffichage} km/h</div>
+                </div>
+            `;
+        }
+
+
+        // --- ONGLET 2 (TRIADE) ---
+
+        function parseTemps(str) {
+            let parts = str.trim().split(':');
+            if (parts.length === 3) {
+                let h = parseInt(parts[0], 10) || 0;
+                let m = parseInt(parts[1], 10) || 0;
+                let s = parseInt(parts[2], 10) || 0;
+                return (h * 3600) + (m * 60) + s;
+            } else if (parts.length === 2) {
+                let m = parseInt(parts[0], 10) || 0;
+                let s = parseInt(parts[1], 10) || 0;
+                return (m * 60) + s;
+            }
+            return null;
+        }
+
+
+        function formatTemps(secondesTotales) {
+            let h = Math.floor(secondesTotales / 3600);
+            let m = Math.floor((secondesTotales % 3600) / 60);
+            let s = Math.round(secondesTotales % 60);
+            if (s === 60) { m++; s = 0; }
+            if (m === 60) { h++; m = 0; }
+           
+
+            if (h > 0) {
+                return `${h}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+            } else {
+                return `${m}min ${s.toString().padStart(2, '0')}s`;
+            }
+        }
+
+
+        function parseAllure(str) {
+            str = str.trim().replace(',', '.');
+            if (str.includes(':')) {
+                let parts = str.split(':');
+                let m = parseInt(parts[0], 10) || 0;
+                let s = parseInt(parts[1], 10) || 0;
+                let secAuKm = (m * 60) + s;
+                return secAuKm > 0 ? (3600 / secAuKm) : null;
+            } else {
+                return parseFloat(str) || null;
+            }
+        }
+
+
+        function effacerTriade() {
+            document.getElementById('t-distance').value = '';
+            document.getElementById('t-temps').value = '';
+            document.getElementById('t-allure').value = '';
+            document.getElementById('resultat-triade').innerHTML = "Remplissez exactement deux variables.";
+        }
+
+
+        function calculerTriade() {
+            let distStr = document.getElementById('t-distance').value.trim().replace(',', '.');
+            let tempsStr = document.getElementById('t-temps').value.trim();
+            let allureStr = document.getElementById('t-allure').value.trim();
+            let lblResultat = document.getElementById('resultat-triade');
+
+
+            let count = 0;
+            if (distStr !== "") count++;
+            if (tempsStr !== "") count++;
+            if (allureStr !== "") count++;
+
+
+            if (count !== 2) {
+                lblResultat.innerHTML = "⚠️ Laissez un champ vide (celui à calculer) et remplissez les deux autres.";
+                return;
+            }
+
+
+            // CAS 1 : Calcul de l'Allure
+
+            if (distStr && tempsStr && !allureStr) {
+                let distance = parseFloat(distStr);
+                let secondes = parseTemps(tempsStr);
+                if (!secondes || isNaN(distance) || distance <= 0) {
+                    lblResultat.innerHTML = "⚠️ Distance ou Temps invalide."; return;
+
+                }
+
+                let vitesseKmh = distance / (secondes / 3600);
+                let secAuKm = 3600 / vitesseKmh;
+                let minPart = Math.floor(secAuKm / 60);
+                let secPart = Math.floor(secAuKm % 60);
+                let vitesseAffichage = vitesseKmh.toFixed(2).replace('.', ',');
+
+
+
+                lblResultat.innerHTML = `
+
+                    <div class="highlight-container">
+                        <div class="highlight-title">🎯 Allure Requise</div>
+                        <div class="highlight-main">🏃‍♂️ ${minPart}:${secPart.toString().padStart(2, '0')} / km</div>
+                        <div class="highlight-sub">⚡ ${vitesseAffichage} km/h</div>
+                    </div>`;
+            }
+
+            
+
+            // CAS 2 : Calcul du Temps
+            else if (distStr && allureStr && !tempsStr) {
+                let distance = parseFloat(distStr);
+                let vitesseKmh = parseAllure(allureStr);
+                if (!vitesseKmh || isNaN(distance) || distance <= 0) {
+                    lblResultat.innerHTML = "⚠️ Distance ou Allure/Vitesse invalide."; return;
+                }
+                let secondesTotales = (distance / vitesseKmh) * 3600;
+                let vitesseAffichage = vitesseKmh.toFixed(2).replace('.', ',');
+                let distanceAffichage = distance.toString().replace('.', ',');
+          
+
+                lblResultat.innerHTML = `
+                    <div class="highlight-container">
+                        <div class="highlight-title">⏱️ Temps Estimé</div>
+                        <div class="highlight-main">⏳ ${formatTemps(secondesTotales)}</div>
+                        <div class="highlight-sub">Pour ${distanceAffichage} km à ${vitesseAffichage} km/h</div>
+                    </div>`;
+            }
+
+           
+
+            // CAS 3 : Calcul de la Distance
+            else if (tempsStr && allureStr && !distStr) {
+                let secondes = parseTemps(tempsStr);
+                let vitesseKmh = parseAllure(allureStr);
+                if (!secondes || !vitesseKmh) {
+                    lblResultat.innerHTML = "⚠️ Temps ou Allure/Vitesse invalide."; return;
+                }
+
+                let distance = vitesseKmh * (secondes / 3600);
+                let distanceAffichage = distance.toFixed(3).replace('.', ',');
+                let vitesseAffichage = vitesseKmh.toFixed(2).replace('.', ',');
+
+                lblResultat.innerHTML = `
+                    <div class="highlight-container">
+                        <div class="highlight-title">📏 Distance Parcourue</div>
+                        <div class="highlight-main">📍 ${distanceAffichage} km</div>
+                        <div class="highlight-sub">En ${tempsStr} à ${vitesseAffichage} km/h</div>
+                    </div>`;
+
+            }
+
+        }
+
+function calculerPassage() {
+    let distTotal = parseFloat(document.getElementById('p-distance').value.replace(',', '.'));
+    let interval = parseFloat(document.getElementById('p-intervalle').value.replace(',', '.'));
+    let saisieVitesse = document.getElementById('p-allure').value.trim().replace(',', '.');
+    let lblResultat = document.getElementById('resultat-passage');
+
+    if (isNaN(distTotal) || isNaN(interval) || !saisieVitesse) {
+        lblResultat.innerHTML = "⚠️ Veuillez remplir tous les champs.";
+        return;
+    }
+
+    let secAuKm = 0;
+
+    // Détection : Allure (avec :) ou Vitesse (chiffre simple)
+    if (saisieVitesse.includes(':')) {
+        let p = saisieVitesse.split(':');
+        secAuKm = parseInt(p[0]) * 60 + parseInt(p[1]);
+    } else {
+        // Vitesse en km/h -> conversion en sec/km : (3600 / km/h)
+        let vitesseKmh = parseFloat(saisieVitesse);
+        if (vitesseKmh <= 0) {
+            lblResultat.innerHTML = "⚠️ Vitesse invalide.";
+            return;
+        }
+        secAuKm = 3600 / vitesseKmh;
+    }
+
+    // 4. Construction du tableau HTML
+  let html = `
+    <table style="width:100%; border-collapse: collapse; font-size: 14px; text-align: left; margin-top: 10px;">
+        <thead>
+            <tr style="border-bottom: 2px solid #e2e8f0; color: #64748b;">
+                <th style="padding: 10px 0; width: 50%;">Distance</th>
+		<th style="padding: 10px 0; text-align: right;">Temps cumulé</th>
+            </tr>
+        </thead>
+        <tbody>`;
+
+    // Boucle pour calculer chaque intervalle
+    for (let i = interval; i < distTotal; i += interval) {
+        html += `
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 8px 0;">${i.toFixed(1).replace('.', ',')} km</td>
+                <td style="padding: 8px 0; font-weight: 600; text-align: right;">${formaterTemps(i * secAuKm)}</td>
+            </tr>`;
+    }
+
+    // 5. Ajout de la ligne finale (la distance totale)
+    html += `
+            <tr style="border-top: 2px solid #0f172a;">
+                <td style="padding: 10px 0; font-weight: 700;">🏁${distTotal.toFixed(1).replace('.', ',')} km</td>
+                <td style="padding: 10px 0; font-weight: 700; text-align: right;">${formaterTemps(distTotal * secAuKm)}</td>
+            </tr>
+        </tbody>
+    </table>`;
+
+    lblResultat.innerHTML = html;
+}
+
+// Fonction utilitaire pour le formatage HH:MM:SS
+function formaterTemps(secondesTotales) {
+    let h = Math.floor(secondesTotales / 3600);
+    let m = Math.floor((secondesTotales % 3600) / 60);
+    let s = Math.round(secondesTotales % 60);
+
+    // On prépare les chaînes avec un zéro devant si besoin (ex: 05)
+    let mStr = m.toString().padStart(2, '0');
+    let sStr = s.toString().padStart(2, '0');
+
+    if (h > 0) {
+        return `${h}:${mStr}:${sStr}`; // Affiche H:MM:SS
+    } else {
+        return `${m}:${sStr}`; // Affiche MM:SS
+    }
+}
+    </script>
+</body>
+</html>
